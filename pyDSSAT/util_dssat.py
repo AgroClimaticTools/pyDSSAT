@@ -7,14 +7,18 @@ Description: To run DSSAT and update DSSBatch.v47 based on exp. file
 """
 
 
+__all__ = ['julianDay', 'date2dssatDate', 'dssatDate2date', 'run_dssat', 
+           'create_DSSBatch', 'read_datacde']
+
+
 '=============================================================================='
 
 import subprocess
-import pandas as pd
 from datetime import date, datetime
-from typing import Optional
 from pathlib import Path
+from typing import Optional
 
+import pandas as pd
 
 '========================= DSSAT Formatting Functions ========================='
 
@@ -116,13 +120,13 @@ def create_DSSBatch(ExpFilePath: str|Path, selected_treatments: Optional[list[st
                 break
             if param == 1:
                 treatments_text = line
-                if selected_treatments is not None and \
-                treatments_text[9:33].strip() in selected_treatments:
-                    TRTNO.append(treatments_text[:2])
-                    SQ.append(treatments_text[2:4])
-                    OP.append(treatments_text[4:6])
-                    CO.append(treatments_text[6:8])
-                    TNAME.append(treatments_text[9:33])
+                if selected_treatments is not None:
+                    if treatments_text[9:33].strip() in selected_treatments:
+                        TRTNO.append(treatments_text[:2])
+                        SQ.append(treatments_text[2:4])
+                        OP.append(treatments_text[4:6])
+                        CO.append(treatments_text[6:8])
+                        TNAME.append(treatments_text[9:33])
                 else:
                     TRTNO.append(treatments_text[:2])
                     SQ.append(treatments_text[2:4])

@@ -6,6 +6,9 @@ Description: To read, update and create soil profile in any *.SOL file
 
 """
 
+__all__ = ['read_soil_profile', 'create_soil_profile', 'update_soil_profile',
+           'update_soil_layer_param']
+
 from typing import Union
 
 import pandas as pd

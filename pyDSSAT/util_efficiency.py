@@ -5,10 +5,15 @@ Created by: Rishabh Gupta
 Description: Calculates model efficiencies and other model validation metrics
 
 """
-import math
-import numpy as np
-from sklearn.metrics import r2_score, mean_squared_error
-from scipy import stats
+__all__ = ['RMSE', 'nRMSE', 'RSR', 'NSE', 'R2', 'r', 'dStat', 'KGE']
+
+
+from numpy import mean as npMean
+from numpy import std as npStd
+from numpy import sum as npSum
+from scipy.stats import pearsonr
+from sklearn.metrics import r2_score, root_mean_squared_error
+
 
 # Computes RMSE coefficient
 def RMSE(observed, simulated):
@@ -20,7 +25,7 @@ def RMSE(observed, simulated):
     
     :return float: RMSE
     '''
-    return mean_squared_error(observed, simulated, squared=False)
+    return root_mean_squared_error(observed, simulated)
 
 # Computes RMSE coefficient
 def nRMSE(observed, simulated):
@@ -32,7 +37,7 @@ def nRMSE(observed, simulated):
     
     :return float: RRMSE
     '''
-    return mean_squared_error(observed, simulated, squared=False)/np.mean(observed)
+    return root_mean_squared_error(observed, simulated)/npMean(observed)
 
 # Computes RSR coefficient
 def RSR(observed, simulated):
@@ -45,7 +50,7 @@ def RSR(observed, simulated):
     
     :return float: RSR
     '''
-    return mean_squared_error(observed, simulated, squared=False)/np.std(observed)
+    return root_mean_squared_error(observed, simulated)/npStd(observed)
 
 # Computes Nash Sutcliffe Efficiency
 def NSE(observed, simulated):
@@ -57,8 +62,8 @@ def NSE(observed, simulated):
     
     :return float: NSE
     '''
-    num = np.sum((observed-simulated)**2)
-    den = np.sum((observed-np.mean(simulated))**2)
+    num = npSum((observed-simulated)**2)
+    den = npSum((observed-npMean(simulated))**2)
     NSE = 1-num/den
     return (NSE)
 
@@ -84,7 +89,7 @@ def r(observed, simulated):
     
     :return float: R2 between observed and simulated data
     '''
-    return stats.pearsonr(observed, simulated)
+    return pearsonr(observed, simulated)[0]
 
 def dStat(observed, simulated):
     '''
@@ -103,8 +108,8 @@ def dStat(observed, simulated):
     
     :return float: d-Stat between observed and simulated data
     '''
-    num = np.sum((observed-simulated)**2)
-    den = np.sum((abs(simulated-np.mean(observed)) + abs(observed-np.mean(observed)))**2)
+    num = npSum((observed-simulated)**2)
+    den = npSum((abs(simulated-npMean(observed)) + abs(observed-npMean(observed)))**2)
     dStat = 1-num/den
     return dStat
 
@@ -125,9 +130,9 @@ def KGE(observed, simulated):
     :return float: KGE between observed and simulated data
     '''
 
-    correlation_coefficient, p_value = stats.pearsonr(observed, simulated)
+    correlation_coefficient, p_value = pearsonr(observed, simulated)
 
     KGE = 1 - ((correlation_coefficient - 1)**2 + \
-        ((np.std(observed)/np.std(simulated))-1)**2 + \
-        ((np.mean(observed)/np.mean(simulated))-1)**2)**0.5
+        ((npStd(observed)/npStd(simulated))-1)**2 + \
+        ((npMean(observed)/npMean(simulated))-1)**2)**0.5
     return KGE
